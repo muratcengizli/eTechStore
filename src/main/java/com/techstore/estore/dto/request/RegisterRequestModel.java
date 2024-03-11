@@ -5,10 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class RegisterRequestModel {
 
     @NotNull(message = "name is mandatory")
@@ -31,4 +27,31 @@ public class RegisterRequestModel {
     @Size(min = 8, max = 50, message = "password length must be between 8 and 50 characters")
     private String password;
 
+    public RegisterRequestModel(String name, String surname, String emailAddress, String mobilePhone, String password) {
+        this.name = name;
+        this.surname = surname;
+        this.emailAddress = emailAddress;
+        this.mobilePhone = mobilePhone;
+        this.password = password;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public String getMobilePhone() {
+        return mobilePhone;
+    }
+
+    public String getPassword() {
+        return password;
+    }
 }

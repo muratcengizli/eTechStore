@@ -1,4 +1,4 @@
-package com.techstore.example;
+package com.techstore.estore;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

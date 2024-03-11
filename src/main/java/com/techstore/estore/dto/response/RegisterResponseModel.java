@@ -12,24 +12,23 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class RegisterResponseModel {
+public class RegisterResponseModel extends BaseResponse{
 
     private AdminUser adminUser;
     private PersonalUser personalUser;
     private User user;
     private ERole role;
-/*
+
     public RegisterResponseModel(AdminUser adminUser)    {
+        super();
         this.adminUser = adminUser;
         this.role = ERole.ADMIN_USER;
     }
 
     public RegisterResponseModel(PersonalUser personalUser)    {
+        super();
         this.personalUser = personalUser;
         this.role = ERole.PERSONAL_USER;
     }
 
-    public  RegisterResponseModel(User user)    {this.user = user;}
-
- */
 }
