@@ -18,8 +18,8 @@ public class PersonalUser extends User  {
 
     public PersonalUser() {}
 
-    public PersonalUser(Long id, String uuid, Timestamp createTime, Timestamp updateTime, Timestamp deleteTime, Boolean isDeleted, String deletedReason, int version, String name, String surname, String emailAddress, String mobilePhone, String password, ERole role, String sex, String occupation) {
-        super(id, uuid, createTime, updateTime, deleteTime, isDeleted, deletedReason, version, name, surname, emailAddress, mobilePhone, password, role);
+    public PersonalUser(Long id, String uuid, Timestamp createTime, Timestamp updateTime, Timestamp deleteTime, Boolean isDeleted, String deletedReason, int version, String name, String surname, String emailAddress, String mobilePhone, String password, ERole role, Boolean locked, Timestamp lockedAt, Boolean enabled, Boolean reactivated, String sex, String occupation) {
+        super(id, uuid, createTime, updateTime, deleteTime, isDeleted, deletedReason, version, name, surname, emailAddress, mobilePhone, password, role, locked, lockedAt, enabled, reactivated);
         this.sex = sex;
         this.occupation = occupation;
     }

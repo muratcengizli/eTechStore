@@ -1,27 +1,43 @@
 package com.techstore.estore.service;
 
+import com.techstore.estore.dto.request.LoginRequestModel;
 import com.techstore.estore.dto.request.RegisterRequestModel;
 import com.techstore.estore.dto.response.BaseResponse;
 import com.techstore.estore.dto.response.RegisterResponseModel;
 import com.techstore.estore.enums.ERole;
+import com.techstore.estore.persistence.entity.ConfirmationToken;
 import com.techstore.estore.persistence.entity.PersonalUser;
+import com.techstore.estore.persistence.entity.User;
 import com.techstore.estore.persistence.repository.PersonalUserRepository;
+import com.techstore.estore.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
-public class PersonalUserManagerImpl implements PersonalUserManager{
+public class PersonalUserManagerImpl implements PersonalUserManager {
 
     @Autowired
     private PersonalUserRepository repository;
+    @Autowired
+    private ConfirmationTokenManager confirmationTokenManager;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private final JwtUtils jwtUtils;
+
+    public PersonalUserManagerImpl(PersonalUserRepository repository, ConfirmationTokenManager confirmationTokenManager, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+        this.repository = repository;
+        this.confirmationTokenManager = confirmationTokenManager;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtils = jwtUtils;
+    }
 
     @Override
     public BaseResponse<RegisterResponseModel> save(RegisterRequestModel model) {
@@ -42,10 +58,15 @@ public class PersonalUserManagerImpl implements PersonalUserManager{
         user.setRole(ERole.PERSONAL_USER);
         //repository.save(user);
 
+        ConfirmationToken confirmationToken = new ConfirmationToken(user);
+        confirmationTokenManager.saveConfirmationToken(confirmationToken);
+
         BaseResponse<RegisterResponseModel> response = new BaseResponse<>();
         response.setData(new RegisterResponseModel(user));
         response.setMessage(HttpStatus.CREATED.toString());
         response.setStatus(HttpStatus.CREATED.value());
+
+
 
         return response;
     }
@@ -59,4 +80,29 @@ public class PersonalUserManagerImpl implements PersonalUserManager{
     public BaseResponse<RegisterResponseModel> delete(String emailAdress) {
         return null;
     }
+
+    @Override
+    public BaseResponse<List<Object>> login(LoginRequestModel model) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(model.getEmailAddress(), model.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String jwt = jwtUtils.generateJwtToken(authentication);
+
+        var user = (User) authentication.getPrincipal();
+
+        List<Object> response = new ArrayList<>();
+
+        var personalUser = (PersonalUser) user;
+        response.add(personalUser);
+
+        var listJwt = new HashMap<String, String>();
+        listJwt.put("accessToken", jwt);
+        listJwt.put("tokenType", "Bearer");
+        response.add(listJwt);
+
+        return new BaseResponse<List<Object>>(response, "Login success!", HttpStatus.OK.value());
+    }
+
 }
